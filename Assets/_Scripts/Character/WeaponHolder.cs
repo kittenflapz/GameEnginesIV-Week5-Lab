@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Weapons;
 
 namespace Character
 {
@@ -13,8 +12,6 @@ namespace Character
 
         private Transform GripLocation;
 
-
-        private bool WasFiring = false;
         private bool FiringPressed = false; 
         //Components
         public PlayerController Controller => PlayerController;
@@ -62,17 +59,12 @@ namespace Character
                     PlayerEvents.Invoke_OnWeaponEquipped(EquippedWeapon);
                 }
             }
-
-            
         }
 
         public void OnLook(InputValue delta)
         {
             Vector3 independentMousePosition =
                 MainCamera.ScreenToViewportPoint(PlayerController.CrosshairComponent.CurrentMousePosition);
-
-
-           // Debug.Log(independentMousePosition);
             PlayerAnimator.SetFloat(AimVerticalHash, independentMousePosition.y);
             PlayerAnimator.SetFloat(AimHorizontalHash, independentMousePosition.x);
         }
@@ -84,9 +76,6 @@ namespace Character
         }
         public void StartFiring()
         {
-
-            if (EquippedWeapon.WeaponStats.BulletsAvailable <= 0 &&
-                EquippedWeapon.WeaponStats.BulletsInClip <= 0) return;
             
             PlayerController.IsFiring = true;
             PlayerAnimator.SetBool(IsFiringHash, PlayerController.IsFiring);
@@ -106,49 +95,7 @@ namespace Character
             
         }
 
-        
-        public void OnReload(InputValue button)
-        {
-            StartReloading();
-            PlayerAnimator.SetBool(IsReloadingHash,PlayerController.IsReloading);
-            
-        }
-
-        public void StartReloading()
-        {
-            if (PlayerController.IsFiring)
-            {
-                WasFiring = true;
-                StopFiring();
-            }
-            PlayerController.IsReloading = true;
-            PlayerAnimator.SetBool(IsReloadingHash, PlayerController.IsReloading);
-            EquippedWeapon.StartReloading();
-            
-            InvokeRepeating(nameof(StopReloading),0, 0.1f);
-        }
-        
-        public void StopReloading()
-        {
-            
-
-            if (PlayerAnimator.GetBool(IsReloadingHash)) return;
-
-            PlayerController.IsReloading = false;
-            // PlayerAnimator.SetBool(IsReloadingHash, PlayerController.IsReloading);
-            EquippedWeapon.StopReloading();
-
-            CancelInvoke(nameof(StopReloading));
-
-
-            if (!WasFiring || !FiringPressed)
-            {
-                return;
-            }
-            StartFiring();
-            WasFiring = false;
-        }
-
+       
         private void OnAnimatorIK(int layerIndex)
         {
             PlayerAnimator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);

@@ -5,7 +5,6 @@ namespace Character
 {
     public class CrosshairScript : MonoBehaviour
     {
-    
         public Vector2 CurrentMousePosition { get; private set; }
         
         public bool Inverted = false;
